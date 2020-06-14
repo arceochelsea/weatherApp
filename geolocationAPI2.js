@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
-
 const successCallback = (position) => {
     console.log(position);
 
@@ -15,7 +13,7 @@ const successCallback = (position) => {
 
     const xhr = new XMLHttpRequest();
     
-    xhr.open('GET', combinedUrl, true);
+    xhr.open('GET', url, true);
 
     xhr.onload = function () {
         if (this.status === 200 && this.readyState === 4) {
@@ -32,27 +30,30 @@ const successCallback = (position) => {
             console.log(description);
 
             const tempOutput = `<p>The temperature in ${cityName} is ${fTemp}°F with ${description}.</p>`;
-            document.getElementById('temp').innerHTML = tempOutput;
+            document.getElementById('dataOutput').innerHTML = tempOutput;
 
         } else if (this.status === 404) {
             console.log('404 Error!');
         }
     }
     xhr.send();
-}
+};
 
-    //executes weather API
-    //4 step XMLHttpRequest Process
-
-}
-
-const errorCallback = (position) => {
-    console.log(position);
+    const errorCallback = (position) => {
+    console.error(position);
     
-    //404 error will return to user
-    //nothing?
-    //tell user they can't recieve weather until location shared?
+    if (position.code === 1) {
+        console.log('PERMISSION DENIED!')
+    } else if (position.code === 2) {
+        console.log('POSITION UNAVAILABLE!')
+    } else if (Geoloca.code === 3) { 
+        console.log('TIMEOUT')
+    }
     
-}
+};
+
+navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
+    enableHighAccuracy: true,
+});
 
 });
