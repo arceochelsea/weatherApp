@@ -1,40 +1,40 @@
-document.addEventListener('DOMContentLoaded', function(){
+document.getElementById('button').addEventListener('click', geolocate);
 
-    const KEY = "";
-    const LAT = 50.1;
-    const LNG = -97.3;
-    let url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${LAT},${LNG}&key=${KEY}`;
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        let parts = data.results[0].address_components;
-        document.body.insertAdjacentHTML(
-          "beforeend",
-          `<p>Formatted: ${data.results[0].formatted_address}</p>`
-        );
-        parts.forEach(part => {
-          if (part.types.includes("country")) {
-            //we found "country" inside the data.results[0].address_components[x].types array
-            document.body.insertAdjacentHTML(
-              "beforeend",
-              `<p>COUNTRY: ${part.long_name}</p>`
-            );
-          }
-          if (part.types.includes("administrative_area_level_1")) {
-            document.body.insertAdjacentHTML(
-              "beforeend",
-              `<p>PROVINCE: ${part.long_name}</p>`
-            );
-          }
-          if (part.types.includes("administrative_area_level_3")) {
-            document.body.insertAdjacentHTML(
-              "beforeend",
-              `<p>LEVEL 3: ${part.long_name}</p>`
-            );
-          }
-        });
-      })
-      .catch(err => console.warn(err.message));
+function geolocate() {
+    navigator.geolocation.getCurrentPosition(success, error);
+    //this gets the location of the user and passes that object of information to two parameters.
+    //if user decides yes it will go to success, it not will go to error
+}
 
-});
+function success(position) {
+    let latitude = position.coords.latitude;
+    let longitude = position.coords.longitude;
+    let apiKey = 'AIzaSyBiZkpbyrgH-Hj95_aaq6SYOz97PUTi3kk'
+    let url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`
+
+    console.log(`${latitude}, ${longitude}`);
+    console.log(position);
+
+    const xhr = new XMLHttpRequest();
+
+    xhr.open('GET', url, true);
+
+    xhr.onload = function () {
+        if (this.readyState === 4 && this.status === 200) {
+            let json = JSON.parse(this.responseText)
+            console.log(json.results[4].formatted_address);
+            let location = json.results[4].formatted_address;
+            document.getElementById('dataOutput').innerHTML = location;
+
+        } else if (this.status === 404) {
+            console.log(`Error! 404`)
+        }
+    }
+    xhr.send();
+}
+
+function error (position) {
+    console.error('User did not provide location');
+}
+
+// https://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&key=AIzaSyBiZkpbyrgH-Hj95_aaq6SYOz97PUTi3kk
